@@ -1,0 +1,21 @@
+public interface MsgType {
+    int LOGIN_REQUEST = 1;
+    int LOGIN_RESPONSE = 2;
+    int USER_LIST = 3;
+    int GAME_LIST = 4;
+    int NEW_USER = 5;
+    int CHAT_NEW_MESSAGE = 6;
+    int NEW_GAME = 7;
+    int WAIT_USERS_JOIN = 8;
+    int WAIT_USERS_CANCEL = 9;
+    int WAIT_USERS_LEAVE = 10;
+    int START_GAME = 11;
+    int TANK_NEW = 12;
+    int TANK_MOVE = 13;
+    int TANK_DEAD = 14;
+    int MISSILE_NEW = 15;
+    int MISSILE_DEAD = 16;
+    int GAME_LEAVE = 17;
+    int GAME_END = 18;
+    int EXIT = 19;
+}
