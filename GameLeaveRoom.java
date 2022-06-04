@@ -11,7 +11,6 @@ public class GameLeave {
         this.username = fields[0];
         this.gameOwner = fields[1];
     }
-
     String Token() {
         return username + delimiter + gameOwner;
     }

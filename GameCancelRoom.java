@@ -1,6 +1,6 @@
-public class WaitUsersCancel {
+public class GameCancel {
     String gameOwner;
-    WaitUsersCancel(String gameOwner) {
+    GameCancel(String gameOwner) {
         this.gameOwner = gameOwner;
     }
 
