@@ -76,7 +76,6 @@ public class HomePanel extends Panel {
     }
 
     public void handleNewUser(User u) {
-        System.out.println("new user message: " + u.username);
         addUser(u, true);
     }
 
@@ -90,7 +89,6 @@ public class HomePanel extends Panel {
                 addUser(u, false);
             }
         }
-
     }
 
     public void handleGameList(String token) {
@@ -117,8 +115,6 @@ public class HomePanel extends Panel {
     }
 
     public void handleGameJoinRoom(String username, String gameID) {
-        System.out.println("user " + username + " joined game " + gameID);
-
         int count = 0;
         for (Game g : games) {
             if (g.owner.equals(gameID)) {
@@ -128,7 +124,6 @@ public class HomePanel extends Panel {
         }
 
         updateGameList();
-
 
         if (username.equals(tankGame.user.username)) {
             gameRoomPanel.setUser(count);
@@ -153,7 +148,6 @@ public class HomePanel extends Panel {
         if (username.equals(tankGame.user.username)) {
             gameRoomPanel.Close();
             currentGame = "";
-            System.out.println("leave " + username + " " + gameID);
         } else if (currentGame.equals(gameID)) {
             gameRoomPanel.setUser(count);
         }

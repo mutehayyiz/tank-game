@@ -73,7 +73,6 @@ public class WarPanel extends JFrame {
         String status;
         if (deadCount < tourCount) {
             status = "Live";
-
         } else {
             status = "Loser";
         }
@@ -168,7 +167,6 @@ public class WarPanel extends JFrame {
 
     int getRandomX() {
         return (int) ((Math.random() * (765 - 10)) + 10);
-
     }
 
     int getRandomY() {

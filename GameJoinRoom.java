@@ -1,7 +1,6 @@
 public class GameJoinRoom {
     String username;
     String gameOwner;
-
     String delimiter = "#d#";
 
     GameJoinRoom(String username, String gameOwner) {
@@ -18,6 +17,4 @@ public class GameJoinRoom {
     String Token() {
         return username + delimiter + gameOwner;
     }
-
-
 }

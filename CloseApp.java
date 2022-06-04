@@ -1,7 +1,6 @@
 public class CloseApp {
     int connectionID;
     String username;
-
     String delimiter = "#d#";
 
     CloseApp(int connectionID, String username) {
@@ -13,7 +12,6 @@ public class CloseApp {
         String[] fielsds = token.split(delimiter);
         this.connectionID = Integer.parseInt(fielsds[0]);
         this.username = fielsds[1];
-
     }
 
     String Token() {

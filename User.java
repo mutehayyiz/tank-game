@@ -3,6 +3,7 @@ import java.io.IOException;
 
 public class User {
     String username;
+
     User(String token) {
         this.username = token;
     }

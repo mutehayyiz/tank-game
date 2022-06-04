@@ -91,7 +91,6 @@ public class Server {
                     int msgType = dataInputStream.readInt();
                     switch (msgType) {
                         case MsgType.LOGIN_REQUEST:
-                            System.out.println("new login request");
                             LoginRequest lr = new LoginRequest(readToken(dataInputStream));
                             boolean usernameExists = false;
 
@@ -105,13 +104,10 @@ public class Server {
                             for (Client c : clients) {
                                 if (c.connectionID == connectionID) {
                                     if (usernameExists) {
-                                        System.out.println("username exists " + lr.username);
                                         LoginResponse resp = new LoginResponse(false);
                                         send(datagramSocket, c.IP, c.udpPort, MsgType.LOGIN_RESPONSE, resp.Token());
                                     } else {
                                         c.username = lr.username;
-                                        System.out.println("new login with username: " + lr.username);
-
                                         LoginResponse resp = new LoginResponse(true);
                                         send(datagramSocket, c.IP, c.udpPort, MsgType.LOGIN_RESPONSE, resp.Token());
                                         send(datagramSocket, c.IP, c.udpPort, MsgType.USER_LIST, tokenizeUserList());
@@ -124,13 +120,11 @@ public class Server {
 
                         case MsgType.NEW_USER:
                             User u = new User(readToken(dataInputStream));
-                            System.out.println("user " + u.username + "joined server");
                             notifyAll(datagramPacket, datagramSocket);
                             break;
 
                         case MsgType.GAME_NEW:
                             Game gm = new Game(readToken(dataInputStream));
-                            System.out.println("new game request: " + gm.owner);
                             games.add(gm);
                             notifyAll(datagramPacket, datagramSocket);
                             break;
@@ -140,7 +134,6 @@ public class Server {
                             for (Game g : games) {
                                 if (jg.gameOwner.equals(g.owner)) {
                                     g.userCount++;
-                                    System.out.println("user " + jg.username + " joined game " + jg.gameOwner);
                                     break;
                                 }
                             }
@@ -161,7 +154,6 @@ public class Server {
                             for (Game g : games) {
                                 if (wul.gameOwner.equals(g.owner)) {
                                     g.userCount--;
-                                    System.out.println("wait users: user " + wul.username + " joined " + wul.gameOwner);
                                     break;
                                 }
                             }
@@ -179,7 +171,6 @@ public class Server {
                         case MsgType.GAME_CANCEL_ROOM:
                             GameCancelRoom wuc = new GameCancelRoom(readToken(dataInputStream));
                             games.removeIf(g -> g.owner.equals(wuc.gameOwner));
-                            System.out.println("wait users cancel: " + wuc.gameOwner);
 
                             for (Client c : clients) {
                                 if (c.currentGame.equals(wuc.gameOwner)) {
@@ -198,6 +189,7 @@ public class Server {
                                     break;
                                 }
                             }
+
                             notifyAll(datagramPacket, datagramSocket);
                             break;
 
@@ -209,7 +201,6 @@ public class Server {
                             break;
                         case MsgType.TANK_DEAD:
                             TankDead td = new TankDead(readToken(dataInputStream));
-                            System.out.println("Dead tank " + td.tankID);
                             notifyPlayers(datagramPacket, datagramSocket, td.gameID);
                             break;
 
@@ -220,7 +211,6 @@ public class Server {
 
                         case MsgType.MISSILE_DEAD:
                             MissileDead md = new MissileDead(readToken(dataInputStream));
-                            System.out.println("Dead missile " + md.missileID);
 
                             notifyPlayers(datagramPacket, datagramSocket, md.gameId);
                             break;
@@ -252,8 +242,6 @@ public class Server {
                             games.forEach(g -> {
                                 if (g.owner.equals(gq.gameID)) {
                                     g.userCount--;
-                                    System.out.println("game: user " + gq.username + " leaved " + gq.gameID);
-
                                 }
                             });
 
@@ -274,10 +262,7 @@ public class Server {
 
                         case MsgType.CLOSE_APP:
                             CloseApp ca = new CloseApp(readToken(dataInputStream));
-                            clients.removeIf(client -> {
-                                System.out.println("close " + client.connectionID);
-                                return client.connectionID == ca.connectionID;
-                            });
+                            clients.removeIf(client -> client.connectionID == ca.connectionID);
                             notifyAll(datagramPacket, datagramSocket);
                             break;
 
@@ -306,7 +291,6 @@ public class Server {
             String delimiter = "%ddd%";
             StringBuilder list = new StringBuilder();
             for (Game g : games) {
-                System.out.println("count: " + g.userCount);
                 list.append(delimiter).append(g.Token());
             }
 
@@ -366,7 +350,6 @@ public class Server {
     public static class Client {
         int udpPort;
         int connectionID;
-
         String IP;
         String currentGame;
         String username;

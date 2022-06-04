@@ -5,7 +5,6 @@ import java.awt.event.WindowEvent;
 class NewGamePanel extends Dialog {
     Button start = new Button("Setup TankGame");
     TextField tour = new TextField(5);
-
     TankGame tankGame;
 
     NewGamePanel(TankGame tankGame) {
@@ -17,7 +16,6 @@ class NewGamePanel extends Dialog {
         this.add(start);
         start.addActionListener(e -> handleSetupGame(tour.getText().trim()));
         this.setSize(60, 80);
-
         this.setResizable(false);
         this.pack();
         this.setLocationRelativeTo(null);

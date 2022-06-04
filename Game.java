@@ -2,7 +2,6 @@ public class Game {
     String owner;
     int tourCount;
     int userCount;
-
     int loserCount;
     boolean started;
     String delimiter = "#d#";
@@ -40,5 +39,4 @@ public class Game {
         Game ch2 = new Game(token);
         System.out.println(ch2.owner + " " + ch2.tourCount + " " + ch2.userCount + " " + ch2.started);
     }
-
 }

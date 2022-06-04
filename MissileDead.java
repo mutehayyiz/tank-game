@@ -9,7 +9,6 @@ public class MissileDead {
         this.missileID = missileID;
         this.gameId = gameId;
     }
-
     MissileDead(String token) {
         String[] fields = token.split(delimiter);
         this.tankID = fields[0];
@@ -20,5 +19,4 @@ public class MissileDead {
     String Token() {
         return tankID + delimiter + missileID + delimiter + missileID;
     }
-
 }

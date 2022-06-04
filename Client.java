@@ -143,7 +143,6 @@ public class Client {
                         tankGame.homePanel.handleGameList(token);
                         break;
                     case MsgType.NEW_USER:
-                        System.out.println("new user from server");
                         User u = new User(readToken(dataInputStream));
                         tankGame.homePanel.handleNewUser(u);
                         break;
@@ -158,22 +157,17 @@ public class Client {
                         break;
 
                     case MsgType.GAME_JOIN_ROOM:
-                        System.out.println("join game");
                         GameJoinRoom jg = new GameJoinRoom(readToken(dataInputStream));
                         tankGame.homePanel.handleGameJoinRoom(jg.username, jg.gameOwner);
                         break;
 
                     case MsgType.GAME_LEAVE_ROOM:
                         GameLeaveRoom lg = new GameLeaveRoom(readToken(dataInputStream));
-                        System.out.println("leave");
-                        System.out.println("wait_users_leave " + lg.username + " " + lg.gameOwner);
                         tankGame.homePanel.handleGameLeaveRoom(lg.username, lg.gameOwner);
                         break;
 
                     case MsgType.GAME_CANCEL_ROOM:
                         GameCancelRoom cg = new GameCancelRoom(readToken(dataInputStream));
-                        System.out.println("cancel");
-                        System.out.println("wait_users_cancel " + cg.gameOwner);
                         tankGame.homePanel.handleGameCancelRoom(cg.gameOwner);
                         break;
 
@@ -219,7 +213,6 @@ public class Client {
 
                     case MsgType.CLOSE_APP:
                         CloseApp ce = new CloseApp(readToken(dataInputStream));
-                        System.out.println(ce.username + " exits");
                         tankGame.homePanel.handleCloseApp(ce);
                         break;
                 }

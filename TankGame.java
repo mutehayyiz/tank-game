@@ -4,10 +4,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class TankGame extends JFrame {
-
     static final int GAME_WIDTH = 800;
     static final int GAME_HEIGHT = 600;
-
     User user;
     Client client;
     ConnectDialog connectDialog = new ConnectDialog(this);

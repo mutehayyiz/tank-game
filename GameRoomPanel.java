@@ -36,12 +36,9 @@ class GameRoomPanel extends Dialog {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("closing");
                 if (tankGame.homePanel.currentGame.equals(tankGame.user.username)) {
-                    System.out.println("sending cancel request");
                     tankGame.client.send(MsgType.GAME_CANCEL_ROOM, new GameCancelRoom(tankGame.user.username).Token());
                 } else {
-                    System.out.println("sending leave request");
                     tankGame.client.send(MsgType.GAME_LEAVE_ROOM, new GameLeaveRoom(tankGame.user.username, tankGame.homePanel.currentGame).Token());
                 }
 

@@ -6,8 +6,8 @@ class Missile {
     int x, y;
     String tankID;
     int id;
-
     String gameID;
+    String delimiter = "#d#";
 
     static final int WIDTH = 10;
     static final int HEIGHT = 10;
@@ -30,9 +30,6 @@ class Missile {
         this.gameID = gameID;
         this.live = true;
     }
-
-
-    String delimiter = "#d#";
 
     Missile(String token) {
         String[] fields = token.split(delimiter);

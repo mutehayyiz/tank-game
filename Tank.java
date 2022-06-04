@@ -22,10 +22,6 @@ class Tank {
 
     String gameId;
 
-    boolean isMe() {
-        return me;
-    }
-
     void setMe(boolean me) {
         this.me = me;
     }
@@ -214,7 +210,6 @@ class Tank {
         }
 
         graphics.drawImage(images[getInt(barrelDirection)], this.tankX, this.tankY, null);
-        // graphics.fillRect(this.tankX, this.tankY, TANK_WIDTH, Tank.TANK_HEIGHT);
         graphics.drawString("ID : " + this.id, this.tankX, this.tankY - 10);
         graphics.setColor(Color.black);
 

@@ -20,20 +20,3 @@ public interface MsgType {
     int GAME_LOSER = 19;
     int CLOSE_APP = 20;
 }
-
-
-/*
-
-quit app
-
-Create room
-join room
-leave room i he
-cancel room i he
-
-start war
-join war
-quit war i he
-leave war i he
-
- */

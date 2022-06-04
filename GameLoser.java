@@ -1,7 +1,6 @@
 public class GameLoser {
     String gameID;
     String username;
-
     String delimiter = "#d#";
 
     GameLoser(String gameID, String username) {

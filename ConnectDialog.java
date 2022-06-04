@@ -6,12 +6,10 @@ import java.awt.event.WindowEvent;
 class ConnectDialog extends Dialog {
     Button connectButton = new Button("Connect");
     Button loginButton = new Button("Login");
-
     TextField textFieldIP = new TextField("127.0.0.1", 16);
     TextField textFieldUserName = new TextField("", 16);
     Label hostLabel = new Label("Host IP :");
     Label usernameLabel = new Label("Username :");
-
     TankGame tankGame;
 
     ConnectDialog(TankGame tankGame) {
@@ -34,8 +32,7 @@ class ConnectDialog extends Dialog {
 
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                System.out.println("closing app with connect dialog");
-                if(tankGame.client.connectionID !=-1){
+                if (tankGame.client.connectionID != -1) {
                     tankGame.client.send(MsgType.CLOSE_APP, new CloseApp(tankGame.client.connectionID, tankGame.user.username).Token());
                 }
                 System.exit(0);
@@ -70,7 +67,6 @@ class ConnectDialog extends Dialog {
         boolean connected = tankGame.client.connect(IP);
 
         if (!connected) {
-            System.out.println("connection error");
             JOptionPane.showMessageDialog(null, "Network error");
             this.setVisible(true);
         } else {
@@ -83,7 +79,7 @@ class ConnectDialog extends Dialog {
         if (username.equals("")) {
             return;
         }
-        System.out.println("login: " + username);
+
         tankGame.user = new User(username);
         tankGame.client.send(MsgType.LOGIN_REQUEST, new LoginRequest(tankGame.client.connectionID, username).Token());
         this.setVisible(false);
