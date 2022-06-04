@@ -10,12 +10,9 @@ public class TankGame extends JFrame {
 
     User user;
     Client client;
-
     ConnectDialog connectDialog = new ConnectDialog(this);
     HomePanel homePanel = new HomePanel(this);
-
     WarPanel warPanel;
-
 
     TankGame() {
         client = new Client(this);
@@ -56,16 +53,6 @@ public class TankGame extends JFrame {
     }
 
     public static void main(String[] args) {
-
-        /* TODO
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TankGame();
-            }
-        });
-
-         */
         new TankGame();
     }
-
 }

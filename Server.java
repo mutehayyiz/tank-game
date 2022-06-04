@@ -15,10 +15,9 @@ public class Server {
         new Thread(new UDPThread()).start();
         try {
             ServerSocket serverSocket = new ServerSocket(TCP_SERVER_PORT);
-            while (true) {
+            do {
                 Socket socket = serverSocket.accept();
                 String socketIP = socket.getInetAddress().getHostAddress();
-                int socketPort = socket.getPort();
 
                 DataInputStream input = new DataInputStream(socket.getInputStream());
 
@@ -34,15 +33,11 @@ public class Server {
                 dataOutputStream.close();
                 socket.close();
 
-                if (serverSocket.isClosed()) {
-                    break;
-                }
-            }
+            } while (!serverSocket.isClosed());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     public static void main(String[] args) {
         new Server().start();
@@ -61,7 +56,7 @@ public class Server {
             int length = in.readInt();
             byte[] array = new byte[length];
             in.read(array);
-            return new String(array, "UTF-8");
+            return new String(array, StandardCharsets.UTF_8);
         }
 
         public void send(DatagramSocket datagramSocket, String IP, int udpPort, int msgType, String token) {
@@ -87,7 +82,7 @@ public class Server {
         public void run() {
             try {
                 DatagramSocket datagramSocket = new DatagramSocket(UDP_SERVER_PORT);
-                while (true) {
+                do {
                     DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
                     datagramSocket.receive(datagramPacket);
 
@@ -222,6 +217,7 @@ public class Server {
                             Missile missile = new Missile(readToken(dataInputStream));
                             notifyPlayers(datagramPacket, datagramSocket, missile.gameID);
                             break;
+
                         case MsgType.MISSILE_DEAD:
                             MissileDead md = new MissileDead(readToken(dataInputStream));
                             System.out.println("Dead missile " + md.missileID);
@@ -231,13 +227,9 @@ public class Server {
 
                         case MsgType.GAME_LOSER:
                             GameLoser gl = new GameLoser(readToken(dataInputStream));
-                            boolean finish = false;
                             for (Game g : games) {
                                 if (g.owner.equals(gl.gameID)) {
                                     g.loserCount++;
-                                    if (g.loserCount + 1 == g.userCount) {
-                                        finish = true;
-                                    }
                                     break;
                                 }
                             }
@@ -249,24 +241,8 @@ public class Server {
                                 }
                             }
 
-                            if (finish) {
-                                String winner = "";
-                                for (Client c : clients) {
-                                    if (c.currentGame.equals(gl.gameID)) {
-                                        c.currentGame = "";
-                                        if (!c.loser) {
-                                            winner = c.username;
-                                        }
-                                    }
-                                }
-
-                                games.removeIf(g -> g.owner.equals(gl.gameID));
-
-                                GameEnd ge = new GameEnd(gl.gameID, winner);
-
-                                for (Client c : clients) {
-                                    send(datagramSocket, c.IP, c.udpPort, MsgType.GAME_END, ge.Token());
-                                }
+                            if (checkFinish(gl.gameID)) {
+                                finishGame(datagramSocket, gl.gameID);
                             }
 
                             break;
@@ -288,7 +264,12 @@ public class Server {
                                 }
                             }
 
-                            notifyAll(datagramPacket, datagramSocket);
+                            if (checkFinish(gq.gameID)) {
+                                finishGame(datagramSocket, gq.gameID);
+                            } else {
+                                notifyAll(datagramPacket, datagramSocket);
+                            }
+
                             break;
 
                         case MsgType.CLOSE_APP:
@@ -304,10 +285,7 @@ public class Server {
                             notifyAll(datagramPacket, datagramSocket);
                     }
 
-                    if (datagramSocket.isClosed()) {
-                        break;
-                    }
-                }
+                } while (!datagramSocket.isClosed());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -315,24 +293,57 @@ public class Server {
 
         String tokenizeUserList() {
             String delimiter = "%ddd%";
-            String list = "";
+            StringBuilder list = new StringBuilder();
             for (Client c : clients) {
                 User u = new User(c.username);
-                list += delimiter + u.Token();
+                list.append(delimiter).append(u.Token());
             }
 
-            return list;
+            return list.toString();
         }
 
         String tokenizeGameList() {
             String delimiter = "%ddd%";
-            String list = "";
+            StringBuilder list = new StringBuilder();
             for (Game g : games) {
                 System.out.println("count: " + g.userCount);
-                list += delimiter + g.Token();
+                list.append(delimiter).append(g.Token());
             }
 
-            return list;
+            return list.toString();
+        }
+
+        boolean checkFinish(String gameID) {
+            boolean finish = false;
+            for (Game g : games) {
+                if (g.owner.equals(gameID)) {
+                    if (g.loserCount + 1 == g.userCount) {
+                        finish = true;
+                    }
+                    break;
+                }
+            }
+            return finish;
+        }
+
+        public void finishGame(DatagramSocket datagramSocket, String gameID) {
+            String winner = "";
+            for (Client c : clients) {
+                if (c.currentGame.equals(gameID)) {
+                    c.currentGame = "";
+                    if (!c.loser) {
+                        winner = c.username;
+                    }
+                }
+            }
+
+            games.removeIf(g -> g.owner.equals(gameID));
+
+            GameEnd ge = new GameEnd(gameID, winner);
+
+            for (Client c : clients) {
+                send(datagramSocket, c.IP, c.udpPort, MsgType.GAME_END, ge.Token());
+            }
         }
 
         public void notifyAll(DatagramPacket datagramPacket, DatagramSocket datagramSocket) throws IOException {
@@ -352,42 +363,22 @@ public class Server {
         }
     }
 
-
     public static class Client {
-        String IP;
         int udpPort;
-        int userId;
-        String username;
-        boolean inGame;
-
-        boolean loser;
-
-        String currentGame;
-
         int connectionID;
+
+        String IP;
+        String currentGame;
+        String username;
+        boolean loser;
 
         Client(String IP, int udpPort, int connectionID) {
             this.IP = IP;
             this.udpPort = udpPort;
             this.connectionID = connectionID;
             this.username = "";
-            this.inGame = false;
             this.currentGame = "";
             loser = false;
-        }
-
-        Client(String IP, int udpPort, int userId, String username, boolean inGame) {
-            currentGame = "";
-            this.IP = IP;
-            this.udpPort = udpPort;
-            this.userId = userId;
-            this.username = username;
-            this.inGame = inGame;
-            System.out.println(this);
-        }
-
-        public String toString() {
-            return "IP: " + this.IP + " \nPort: " + this.udpPort + "\nUsername: " + username + "\nInGame: " + inGame + "\n";
         }
     }
 }

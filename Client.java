@@ -62,8 +62,6 @@ public class Client {
             }
         }
 
-        System.out.println("Connected with id: " + this.connectionID);
-
         new Thread(new UDPReceiveThread()).start();
 
         return true;

@@ -110,7 +110,6 @@ public class HomePanel extends Panel {
 
     public void handleGameNew(Game game) {
         addGame(game, true);
-        System.out.println("new tankGame message received");
         if (game.owner.equals(tankGame.user.username)) {
             tankGame.homePanel.newGamePanel.Close();
             tankGame.client.send(MsgType.GAME_JOIN_ROOM, new GameJoinRoom(tankGame.user.username, game.owner).Token());
@@ -169,8 +168,6 @@ public class HomePanel extends Panel {
             gameRoomPanel.Close();
             currentGame = "";
         }
-
-        System.out.println("cancelled: " + gameID);
     }
 
     public void handleGameEnd(GameEnd end) {
