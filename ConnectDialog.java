@@ -24,17 +24,9 @@ class ConnectDialog extends Dialog {
         this.add(textFieldUserName);
         this.add(connectButton);
         this.add(loginButton);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                System.exit(0);
-            }
-        });
 
         connectButton.addActionListener(e -> connect(textFieldIP.getText().trim()));
         loginButton.addActionListener(e -> login(textFieldUserName.getText().trim()));
-
 
         this.pack();
         this.setResizable(false);
@@ -42,9 +34,14 @@ class ConnectDialog extends Dialog {
 
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                setVisible(false);
+                System.out.println("closing app with connect dialog");
+                if(tankGame.client.connectionID !=-1){
+                    tankGame.client.send(MsgType.CLOSE_APP, new CloseApp(tankGame.client.connectionID, tankGame.user.username).Token());
+                }
+                System.exit(0);
             }
         });
+
         showConnect();
     }
 
@@ -65,7 +62,6 @@ class ConnectDialog extends Dialog {
         usernameLabel.setVisible(true);
         textFieldUserName.setVisible(true);
         loginButton.setVisible(true);
-
     }
 
     private void connect(String IP) {
@@ -84,12 +80,12 @@ class ConnectDialog extends Dialog {
     }
 
     private void login(String username) {
-        if (username.equals("")){
+        if (username.equals("")) {
             return;
         }
         System.out.println("login: " + username);
         tankGame.user = new User(username);
-        tankGame.client.send(MsgType.LOGIN_REQUEST,  new LoginRequest(tankGame.client.connectionID, username).Token());
+        tankGame.client.send(MsgType.LOGIN_REQUEST, new LoginRequest(tankGame.client.connectionID, username).Token());
         this.setVisible(false);
     }
 }

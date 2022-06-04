@@ -1,6 +1,7 @@
-public class GameCancel {
+public class GameCancelRoom {
     String gameOwner;
-    GameCancel(String gameOwner) {
+
+    GameCancelRoom(String gameOwner) {
         this.gameOwner = gameOwner;
     }
 

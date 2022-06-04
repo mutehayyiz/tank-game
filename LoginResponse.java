@@ -13,13 +13,4 @@ public class LoginResponse {
     public String Token() {
         return String.valueOf(loggedIn);
     }
-
-    public static void main(String []args){
-        LoginResponse ch = new LoginResponse(false);
-        String token = ch.Token();
-        System.out.println(token);
-        LoginResponse ch2 = new LoginResponse(token);
-        System.out.println(ch2.loggedIn);
-    }
-
 }

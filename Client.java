@@ -7,7 +7,7 @@ public class Client {
     int TCP_PORT = 4242;
     private int udpPort;
     private String IP;
-    int connectionID;
+    int connectionID = -1;
 
     void setUdpPort(int udpPort) {
         this.udpPort = udpPort;
@@ -153,32 +153,37 @@ public class Client {
                         ChatMessage ch = new ChatMessage(readToken(dataInputStream));
                         tankGame.homePanel.handleChatMessage(ch);
                         break;
-                    case MsgType.NEW_GAME:
-                        Game game = new Game(readToken(dataInputStream));
-                        tankGame.homePanel.handleNewGame(game);
-                        break;
-                    case MsgType.WAIT_USERS_JOIN:
-                        System.out.println("join game");
-                        WaitUsersJoin jg = new WaitUsersJoin(readToken(dataInputStream));
-                        tankGame.homePanel.handleJoinGame(jg.username, jg.gameOwner);
-                        break;
-                    case MsgType.WAIT_USERS_CANCEL:
-                        WaitUsersCancel cg = new WaitUsersCancel(readToken(dataInputStream));
-                        System.out.println("cancel");
 
-                        System.out.println("wait_users_cancel " + cg.gameOwner);
-                        tankGame.homePanel.handleWaitUsersCancel(cg.gameOwner);
+                    case MsgType.GAME_NEW:
+                        Game game = new Game(readToken(dataInputStream));
+                        tankGame.homePanel.handleGameNew(game);
                         break;
-                    case MsgType.WAIT_USERS_LEAVE:
-                        WaitUsersLeave lg = new WaitUsersLeave(readToken(dataInputStream));
+
+                    case MsgType.GAME_JOIN_ROOM:
+                        System.out.println("join game");
+                        GameJoinRoom jg = new GameJoinRoom(readToken(dataInputStream));
+                        tankGame.homePanel.handleGameJoinRoom(jg.username, jg.gameOwner);
+                        break;
+
+                    case MsgType.GAME_LEAVE_ROOM:
+                        GameLeaveRoom lg = new GameLeaveRoom(readToken(dataInputStream));
                         System.out.println("leave");
                         System.out.println("wait_users_leave " + lg.username + " " + lg.gameOwner);
-                        tankGame.homePanel.handleWaitUsersLeave(lg.username, lg.gameOwner);
+                        tankGame.homePanel.handleGameLeaveRoom(lg.username, lg.gameOwner);
                         break;
-                    case MsgType.START_GAME:
+
+                    case MsgType.GAME_CANCEL_ROOM:
+                        GameCancelRoom cg = new GameCancelRoom(readToken(dataInputStream));
+                        System.out.println("cancel");
+                        System.out.println("wait_users_cancel " + cg.gameOwner);
+                        tankGame.homePanel.handleGameCancelRoom(cg.gameOwner);
+                        break;
+
+                    case MsgType.GAME_START:
                         GameStart sg = new GameStart(readToken(dataInputStream));
-                        tankGame.homePanel.handleStartGame(sg.gameOwner);
+                        tankGame.homePanel.handleGameStart(sg.gameOwner);
                         break;
+
                     case MsgType.TANK_NEW:
                         Tank tank = new Tank(readToken(dataInputStream));
                         tankGame.warPanel.handleNewTank(tank);
@@ -188,31 +193,36 @@ public class Client {
                         Tank tankMove = new Tank(readToken(dataInputStream));
                         tankGame.warPanel.handleTankMove(tankMove);
                         break;
-                    case MsgType.TANK_DEAD:
-                        TankDead td = new TankDead(readToken(dataInputStream));
-                        tankGame.warPanel.handleTankDead(td);
-                        break;
-                    case MsgType.MISSILE_DEAD:
-                        MissileDead md = new MissileDead(readToken(dataInputStream));
-                        tankGame.warPanel.handleMissileDead(md);
-                        break;
+
                     case MsgType.MISSILE_NEW:
                         Missile missile = new Missile(readToken(dataInputStream));
                         tankGame.warPanel.handleNewMissile(missile);
                         break;
-                    case MsgType.GAME_LEAVE:
-                        GameLeave gl = new GameLeave(readToken(dataInputStream));
-                        tankGame.homePanel.handleGameLeave(gl);
+
+                    case MsgType.MISSILE_DEAD:
+                        MissileDead md = new MissileDead(readToken(dataInputStream));
+                        tankGame.warPanel.handleMissileDead(md);
                         break;
+
+                    case MsgType.TANK_DEAD:
+                        TankDead td = new TankDead(readToken(dataInputStream));
+                        tankGame.warPanel.handleTankDead(td);
+                        break;
+
+                    case MsgType.GAME_QUIT:
+                        GameQuit gq = new GameQuit(readToken(dataInputStream));
+                        tankGame.homePanel.handleGameQuit(gq);
+                        break;
+
                     case MsgType.GAME_END:
                         GameEnd ge = new GameEnd(readToken(dataInputStream));
                         tankGame.homePanel.handleGameEnd(ge);
                         break;
 
-                    case MsgType.EXIT:
-                        Exit e = new Exit(readToken(dataInputStream));
-                        System.out.println(e.username + " exits");
-                        tankGame.homePanel.handleExit(e);
+                    case MsgType.CLOSE_APP:
+                        CloseApp ce = new CloseApp(readToken(dataInputStream));
+                        System.out.println(ce.username + " exits");
+                        tankGame.homePanel.handleCloseApp(ce);
                         break;
                 }
             } catch (

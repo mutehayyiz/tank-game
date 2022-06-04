@@ -20,6 +20,8 @@ class Tank {
     Direction direction;
     Direction barrelDirection = Direction.D;
 
+    String gameId;
+
     boolean isMe() {
         return me;
     }
@@ -36,8 +38,8 @@ class Tank {
         this.isLive = live;
     }
 
-    private static Toolkit tk = Toolkit.getDefaultToolkit();
-    private static Image[] images = null;
+    private static final Toolkit tk = Toolkit.getDefaultToolkit();
+    private static final Image[] images;
 
     static {
         images = new Image[]{
@@ -53,47 +55,30 @@ class Tank {
     }
 
     int getInt(Direction d) {
-        int ret = 0;
+        int ret = -1;
         switch (d) {
-            case U:
-                ret = 0;
-                break;
-            case RU:
-                ret = 1;
-                break;
-            case R:
-                ret = 2;
-                break;
-            case RD:
-                ret = 3;
-                break;
-            case D:
-                ret = 4;
-                break;
-            case LD:
-                ret = 5;
-                break;
-            case L:
-                ret = 6;
-                break;
-            case LU:
-                ret = 7;
-                break;
-            default:
+            case U -> ret = 0;
+            case RU -> ret = 1;
+            case R -> ret = 2;
+            case RD -> ret = 3;
+            case D -> ret = 4;
+            case LD -> ret = 5;
+            case L -> ret = 6;
+            case LU -> ret = 7;
+            default -> {
+            }
         }
 
         return ret;
     }
 
-    private Tank(int x, int y, boolean me) {
+    Tank(String id, int x, int y, Direction direction, String gameId) {
+        this.id = id;
         this.tankX = x;
         this.tankY = y;
-        this.me = me;
-    }
-
-    Tank(int x, int y, boolean me, Direction direction) {
-        this(x, y, me);
         this.direction = direction;
+        this.gameId = gameId;
+        setLive(true);
     }
 
     String delimiter = "#d#";
@@ -105,6 +90,8 @@ class Tank {
         this.tankY = Integer.parseInt(fields[2]);
         this.direction = Direction.values()[Integer.parseInt(fields[3])];
         this.barrelDirection = Direction.values()[Integer.parseInt(fields[4])];
+        this.gameId = fields[5];
+        setLive(true);
     }
 
     String Token() {
@@ -112,7 +99,8 @@ class Tank {
                 this.tankX + delimiter +
                 this.tankY + delimiter +
                 this.direction.ordinal() + delimiter +
-                this.barrelDirection.ordinal();
+                this.barrelDirection.ordinal() + delimiter +
+                this.gameId;
     }
 
     private boolean checkEdge(int x, int y) {
@@ -219,7 +207,6 @@ class Tank {
 
     void draw(Graphics graphics) {
 
-        Color color = graphics.getColor();
         if (this.me) {
             graphics.setColor(Color.green);
         } else {
@@ -230,44 +217,9 @@ class Tank {
         // graphics.fillRect(this.tankX, this.tankY, TANK_WIDTH, Tank.TANK_HEIGHT);
         graphics.drawString("ID : " + this.id, this.tankX, this.tankY - 10);
         graphics.setColor(Color.black);
-/*
-        int x1 = this.tankX + TANK_WIDTH / 2;
-        int y1 = this.tankY + TANK_HEIGHT / 2;
-        int x2 = countX2();
-        int y2 = countY2();
 
-        graphics.drawLine(x1, y1, x2, y2);
-        graphics.setColor(color);
-
- */
         move();
     }
-
-    private int countX2() {
-        double x = 0;
-        switch (barrelDirection) {
-            case U, D -> x = this.tankX + TANK_WIDTH / 2.0;
-            case RU, R, RD -> x = this.tankX + TANK_WIDTH * 1.5;
-            case LD, L, LU -> x = this.tankX - TANK_WIDTH / 2.0;
-            default -> {
-            }
-        }
-        return (int) x;
-    }
-
-    private int countY2() {
-        double y = 0;
-        switch (barrelDirection) {
-            case U, RU, LU -> y = this.tankY - TANK_HEIGHT / 2.0;
-            case R -> y = this.tankY + TANK_HEIGHT / 2.0;
-            case RD, D, LD -> y = this.tankY + TANK_HEIGHT * 1.5;
-            case L -> y = this.tankY + TANK_WIDTH / 2.0;
-            default -> {
-            }
-        }
-        return (int) y;
-    }
-
 
     public Missile fire() {
         if (!this.isLive) {
@@ -277,7 +229,7 @@ class Tank {
         int x = this.tankX + Tank.TANK_WIDTH / 2 - Missile.WIDTH / 2;
         int y = this.tankY + Tank.TANK_HEIGHT / 2 - Missile.HEIGHT / 2;
 
-        return new Missile(id, x, y, this.barrelDirection);
+        return new Missile(id, x, y, this.barrelDirection, gameId);
     }
 
     String keyPressed(KeyEvent keyEvent) {

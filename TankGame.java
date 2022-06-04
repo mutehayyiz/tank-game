@@ -8,9 +8,10 @@ public class TankGame extends JFrame {
     static final int GAME_WIDTH = 800;
     static final int GAME_HEIGHT = 600;
 
-    ConnectDialog connectDialog = new ConnectDialog(this);
     User user;
     Client client;
+
+    ConnectDialog connectDialog = new ConnectDialog(this);
     HomePanel homePanel = new HomePanel(this);
 
     WarPanel warPanel;
@@ -20,16 +21,15 @@ public class TankGame extends JFrame {
         client = new Client(this);
         initComponents();
     }
-    void handleLoginResponse(boolean resp){
+
+    void handleLoginResponse(boolean resp) {
         if (!resp) {
             JOptionPane.showMessageDialog(null, "username exists");
             System.out.println("username exists");
             connectDialog.setVisible(true);
         } else {
-            System.out.println("success!");
-
+            System.out.println("connected!");
             setContentPane(homePanel);
-
             client.send(MsgType.NEW_USER, user.Token());
         }
     }
@@ -40,15 +40,15 @@ public class TankGame extends JFrame {
         this.setLocation((screenWidth - GAME_WIDTH) / 2, (screenHeight - GAME_HEIGHT) / 2);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.setResizable(false);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Tank TankGame");
 
         this.setVisible(true);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                client.send(MsgType.EXIT, new Exit(user.username).Token());
+                System.out.println("closing event from home panel ");
+                client.send(MsgType.CLOSE_APP, new CloseApp(client.connectionID, user.username).Token());
+                System.exit(0);
             }
         });
 
@@ -56,20 +56,16 @@ public class TankGame extends JFrame {
     }
 
     public static void main(String[] args) {
+
+        /* TODO
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new TankGame();
             }
         });
-        /*
-        g.client = new Client(g);
-        g.initComponents();
-
-        g.client.connect("127.0.0.1", 4242);
-
-        g.client.send(new LoginRequestMsg(g, "ahmet"));
 
          */
+        new TankGame();
     }
 
 }

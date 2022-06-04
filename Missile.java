@@ -7,28 +7,28 @@ class Missile {
     String tankID;
     int id;
 
+    String gameID;
+
     static final int WIDTH = 10;
     static final int HEIGHT = 10;
     private static int ID = 1;
     private static final int SPEED = 20;
     private boolean me;
-    boolean live = true;
+    boolean live;
     Direction direction;
-
-    boolean isMe() {
-        return me;
-    }
 
     void setMe(boolean b) {
         this.me = b;
     }
 
-    Missile(String tankID, int x, int y, Direction direction) {
+    Missile(String tankID, int x, int y, Direction direction, String gameID) {
         this.tankID = tankID;
         this.x = x;
         this.y = y;
         this.direction = direction;
         this.id = ID++;
+        this.gameID = gameID;
+        this.live = true;
     }
 
 
@@ -41,6 +41,8 @@ class Missile {
         this.x = Integer.parseInt(fields[2]);
         this.y = Integer.parseInt(fields[3]);
         this.direction = Direction.values()[Integer.parseInt(fields[4])];
+        this.gameID = fields[5];
+        this.live = true;
     }
 
     String Token() {
@@ -48,11 +50,11 @@ class Missile {
                 this.tankID + delimiter +
                 this.x + delimiter +
                 this.y + delimiter +
-                this.direction.ordinal();
+                this.direction.ordinal() + delimiter +
+                this.gameID;
     }
 
     void draw(Graphics g) {
-
         Color c = g.getColor();
 
         if (this.me) {
@@ -110,9 +112,8 @@ class Missile {
     }
 
     boolean hitTank(Tank tank) {
-        if (this.live && this.getRect().intersects(tank.getRect()) && tank.isLive() && this.me != tank.isMe()) {
+        if (this.live && this.getRect().intersects(tank.getRect()) && tank.isLive() && !this.me) {
             tank.setLive(false);
-            this.live = false;
             return true;
         }
 
